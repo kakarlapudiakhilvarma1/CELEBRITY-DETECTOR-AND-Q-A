@@ -3,7 +3,7 @@ version: 2.1
 executors:
   docker-executor:
     docker:
-      - image: google/cloud-sdk:latest
+      - image: cimg/gcp:2024.01  # This image has both gcloud and docker
     working_directory: ~/repo
 
 jobs:
@@ -22,7 +22,7 @@ jobs:
           command: |
               echo "$GCLOUD_SERVICE_KEY" | base64 --decode > gcp-key.json
               gcloud auth activate-service-account --key-file=gcp-key.json
-              gcloud auth configure-docker us-central1-docker.pkg.dev || gcloud auth configure-docker
+              gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - run:
           name: Build and Push Image
@@ -34,13 +34,11 @@ jobs:
     executor: docker-executor
     steps:
       - checkout
-      - setup_remote_docker
       - run:
           name: Authenticate with google cloud
           command: |
               echo "$GCLOUD_SERVICE_KEY" | base64 --decode > gcp-key.json
               gcloud auth activate-service-account --key-file=gcp-key.json
-              gcloud auth configure-docker us-central1-docker.pkg.dev || gcloud auth configure-docker
       
       - run:
           name: Configure GKE
@@ -63,6 +61,3 @@ workflows:
       - deploy_to_gke:
           requires:
             - build_docker_image
-
-
-
