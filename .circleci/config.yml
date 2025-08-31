@@ -3,7 +3,7 @@ version: 2.1
 executors:
   docker-executor:
     docker:
-      - image: cimg/gcp:2024.01  # This image has both gcloud and docker
+      - image: cimg/gcp:2023.12.1  # Use a known stable version
     working_directory: ~/repo
 
 jobs:
